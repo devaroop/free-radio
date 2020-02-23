@@ -35,6 +35,10 @@ var Relay = function(channelName, peer_type){
       return
     }
 
+    if(message.broadcasting){
+      this.onNewBroadcaster(message.broadcaster_id)
+    }
+    
     if(message.client_id && "client" == this.peer_type && this.client_id != message.client_id){
       console.log("Message not for this client. Returning!!!");
       return;
@@ -207,7 +211,7 @@ Relay.prototype.fetch_resources_and_get_stream = function(user_media_request, do
   navigator.mediaDevices.getUserMedia(user_media_request)
 	   .then(gotStream)
 	   .catch(function(error){
-	     console.error("Fetching resources getUserMedia error: ", error);
+	     alert("Fetching resources getUserMedia error: ", error);
 	   });
 
   function gotStream(stream) {
