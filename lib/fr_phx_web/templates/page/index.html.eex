@@ -1,0 +1,83 @@
+<section class="phx-hero">
+  <h1><%= gettext "Welcome to %{name}!", name: "Phoenix" %></h1>
+  <p>A productive web framework that<br/>does not compromise speed or maintainability.</p>
+</section>
+
+<section class="row">
+  <article class="column">
+    <h2>Resources</h2>
+    <ul>
+      <li>
+        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
+      </li>
+      <li>
+        <a href="https://github.com/phoenixframework/phoenix">Source</a>
+      </li>
+      <li>
+        <a href="https://github.com/phoenixframework/phoenix/blob/v1.4/CHANGELOG.md">v1.4 Changelog</a>
+      </li>
+    </ul>
+  </article>
+  <article class="column">
+    <h2>Help</h2>
+    <ul>
+      <li>
+        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
+      </li>
+      <li>
+        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
+      </li>
+      <li>
+        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
+      </li>
+    </ul>
+  </article>
+</section>
+
+<button id="view">Hear</button>
+
+<audio autoplay id="receive_audio_elem"></audio>
+
+
+<script type="text/javascript">
+ var channelName = "broadcasts:";
+ var canvas_label = "";
+ var remoteAudio = document.getElementById("receive_audio_elem");
+ var relay;
+ 
+ $(document).ready(function(){
+     relay = new Relay(channelName, "client");
+     relay.gotRemoteStream = function(event){
+	 remoteAudio.srcObject = event.streams[0];
+     };
+     
+     relay.onCallEnded = function(){
+	 relay.log('On call ended func');
+     };
+
+     relay.onCallStarted = function(){
+	 relay.log('On call started func');
+     };
+
+     relay.onCallFailed = function(){
+	 relay.log('On call Failed func');
+     }
+     
+ });
+
+ $('#view').click(function(){
+     relay.setupPeerConnection();
+     relay.request_participation("someid");
+     $(this).hide();
+     $('#loading').show();
+ });
+
+ $('#hangup').click(function(){
+     relay.hangup();
+     $(this).hide();
+     $('#view').show();
+     $('#snapshot').hide();
+     remoteVideo.src = "";
+     });
+     
+</script>

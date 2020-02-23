@@ -1,0 +1,45 @@
+<form id="start_broadcast">
+  <input id="broadcaster_name" required type="text" placeholder="Enter a unique name you can be identified with" />
+  <button type="submit">Start your broadcast</button>
+</form>
+
+<script type="text/javascript">
+ var order_item_ids = [];
+ var relay;
+ var channelName = "broadcasts:";
+
+ $('#start_broadcast').submit(function(e){
+     e.preventDefault();
+     relay = new Relay(channelName, "server");
+     var user_media_request = {
+         audio: true,
+         video: false
+     };
+     relay.fetch_resources_and_get_stream(user_media_request, display_audio);
+ });
+
+ var display_audio = function(stream){
+     var broadcaster_id = $('#broadcaster_name').val();
+     relay.set_broadcaster_id(broadcaster_id);
+     relay.channel.push("message", {
+	 body: JSON.stringify({
+	     "broadcasting": true,
+	     "broadcaster_id": broadcaster_id
+	 })
+     });
+     //localAudio.src = URL.createObjectURL(stream);
+     console.log("Received local stream and ready to broadcast");
+ };
+
+ $('#hangup').click(function(){
+     relay.hangup();
+     relay.channel.push("message", { body: JSON.stringify({
+	 "callEnded": true
+     })});
+     //   update_status("completed");
+     $( this ).hide();
+     $('#start').show();
+     $('#camera_select_form').show();
+     localVideo.src = "";
+ }); 
+</script>
