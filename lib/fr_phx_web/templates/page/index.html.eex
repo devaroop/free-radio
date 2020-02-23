@@ -5,9 +5,8 @@
 
 <audio autoplay id="receive_audio_elem"></audio>
 
-
 <script type="text/javascript">
- var channelName = "broadcasts:";
+ var channelName = "broadcasts:all";
  var remoteAudio = document.getElementById("receive_audio_elem");
  var relay;
  
@@ -32,10 +31,11 @@
  });
 
  $('#view').click(function(){
+     var new_client_id = Math.floor(Math.random() * 90000) + 10000;
+     relay.set_client_id(new_client_id);
+     relay.set_broadcaster_id("devaroop");
      relay.setupPeerConnection();
-     relay.request_participation("someid");
-     $(this).hide();
-     $('#loading').show();
+     relay.request_participation();
  });
 
  $('#hangup').click(function(){
@@ -44,6 +44,6 @@
      $('#view').show();
      $('#snapshot').hide();
      remoteVideo.src = "";
-     });
-     
+ });
+ 
 </script>

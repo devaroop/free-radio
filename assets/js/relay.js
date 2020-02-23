@@ -5,10 +5,14 @@ var Relay = function(channelName, peer_type){
   this.inProgress = false;
   this.peer_type = peer_type;
   this.debug = true;
-  this.broadcaster_id;
   this.onCallEnded;
   this.onCallStarted;
   this.onCallFailed;
+
+  //multi tenacy
+  this.broadcaster_id;
+  this.client_id;
+  
   var that = this;
   this.peerConnectionConfig = null;
   
@@ -16,6 +20,9 @@ var Relay = function(channelName, peer_type){
     this.broadcaster_id = new_id;
   }
 
+  this.set_client_id = function(new_id){
+    this.client_id = new_id;
+  }
   
   this.channel.join()
       .receive("ok", () => { that.log("Successfully joined relay channel: " + channelName) })
@@ -25,12 +32,22 @@ var Relay = function(channelName, peer_type){
     let message = JSON.parse(payload.body);
     if(message.candidate){
       this.gotRemoteIceCandidate(message);
+      return
     }
-    else if(message.callEnded && "client" == this.peer_type){
-      this.onCallEnded();
+
+    if(message.client_id && "client" == this.peer_type && this.client_id != message.client_id){
+      console.log("Message not for this client. Returning!!!");
+      return;
     }
-    else if(!this.inProgress){
+
+    if(message.broadcaster_id && "server" == this.peer_type && this.broadcaster_id != message.broadcaster_id){
+      console.log("Message not for this client. Returning!!!");
+      return;
+    }
+    
+    if(!this.inProgress){
       if (message.request_participation && "server" == this.peer_type){
+	this.client_id = message.client_id;
 	this.call();
       }
       else if (message.sdp && "offer" == message.sdp.type && "client" == this.peer_type) {
@@ -87,7 +104,8 @@ var Relay = function(channelName, peer_type){
   this.sendAnswer = function(description){
     that.peerConnection.setLocalDescription(description, () => {
       that.channel.push("message", { body: JSON.stringify({
-	  "sdp": that.peerConnection.localDescription
+	"sdp": that.peerConnection.localDescription,
+	"broadcaster_id": that.broadcaster_id
       })});
     }, that.handleError);
   }
@@ -95,7 +113,8 @@ var Relay = function(channelName, peer_type){
   this.sendOffer = function(description){
     that.peerConnection.setLocalDescription(description, () => {
       that.channel.push("message", { body: JSON.stringify({
-	"sdp": that.peerConnection.localDescription
+	"sdp": that.peerConnection.localDescription,
+	"client_id": that.client_id
       })});
     }, that.handleError);
   }
@@ -174,11 +193,12 @@ var Relay = function(channelName, peer_type){
   
 };
 
-Relay.prototype.request_participation = function(broadcaster_id){
+Relay.prototype.request_participation = function(){
   this.log("Requesting participation");
   this.channel.push("message", { body: JSON.stringify({
     "request_participation": true,
-    "broadcaster_id": broadcaster_id
+    "broadcaster_id": this.broadcaster_id,
+    "client_id": this.client_id
   })});
 };
 
