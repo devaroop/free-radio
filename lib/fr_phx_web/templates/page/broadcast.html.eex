@@ -1,12 +1,21 @@
-<form id="start_broadcast">
-  <input id="broadcaster_name" required type="text" placeholder="Enter a unique name you can be identified with" />
-  <button type="submit">Start your broadcast</button>
-</form>
+<div class="container" style="margin-top: 40px;">
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      <form id="start_broadcast">
+	<div class="form-group">
+	  <input id="broadcaster_name" class="form-control" required type="text" placeholder="Enter your broadcast name" />
+	  <small class="form-text text-muted">This is to uniquely identify you on the internet</small>
+	</div>
+	<button class="btn btn-success" type="submit">Start</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
  var order_item_ids = [];
  var relay;
- var channelName = "broadcasts:";
+ var channelName = "broadcasts:all";
 
  $('#start_broadcast').submit(function(e){
      e.preventDefault();

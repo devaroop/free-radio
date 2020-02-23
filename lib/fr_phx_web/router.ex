@@ -17,7 +17,7 @@ defmodule FrPhxWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/show", PageController, :show
+    get "/broadcast", PageController, :broadcast
   end
 
   # Other scopes may use custom stacks.

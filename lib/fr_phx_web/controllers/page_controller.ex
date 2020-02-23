@@ -5,8 +5,8 @@ defmodule FrPhxWeb.PageController do
     render(conn, "index.html")
   end
 
-  def show(conn, _params) do
-    render(conn, "show.html")
+  def broadcast(conn, _params) do
+    render(conn, "broadcast.html")
   end
   
 end
