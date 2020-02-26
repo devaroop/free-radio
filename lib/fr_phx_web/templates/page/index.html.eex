@@ -55,6 +55,7 @@
      var new_client_id = Math.floor(Math.random() * 90000) + 10000;
      relay.set_client_id(new_client_id);
      relay.set_broadcaster_id(broadcaster_id);
+     relay.inProgress = false;
      relay.setupPeerConnection();
      relay.request_participation();
  };

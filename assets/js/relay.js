@@ -35,7 +35,7 @@ var Relay = function(channelName, peer_type){
       return
     }
 
-    if(message.broadcasting){
+    if(message.broadcasting && "client" == this.peer_type){
       this.onNewBroadcaster(message.broadcaster_id)
     }
     
